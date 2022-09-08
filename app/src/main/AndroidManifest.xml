@@ -10,7 +10,7 @@
     <!-- this is required if not app will crash, Lollipop Device
 * @see ContextCompat.java class
 * @see Context#getExternalCacheDir()  -->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="21" tools:replace="android:maxSdkVersion"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="21"/>
 
     <application
         android:allowBackup="true"

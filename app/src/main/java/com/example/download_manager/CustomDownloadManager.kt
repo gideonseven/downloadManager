@@ -7,7 +7,9 @@ import android.content.Context
 import android.database.Cursor
 import android.net.Uri
 import androidx.lifecycle.LifecycleCoroutineScope
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.File
 
@@ -75,7 +77,7 @@ class CustomDownloadManager {
             myDownloadId = downloadManager.enqueue(request)
             val query = Query().setFilterById(myDownloadId)
 
-            lifecycleScope.launchWhenStarted{
+            lifecycleScope.launchWhenStarted {
                 Timber.e("=== launchWhenStarted")
                 var downloading = true
                 while (downloading) {

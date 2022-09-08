@@ -1,6 +1,5 @@
 package com.example.download_manager
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -12,7 +11,6 @@ import com.google.android.material.button.MaterialButton
 import java.io.File
 
 class MainActivity : AppCompatActivity() {
-    @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
