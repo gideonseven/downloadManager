@@ -9,6 +9,7 @@ import android.net.Uri
 import androidx.lifecycle.LifecycleCoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.File
@@ -36,7 +37,6 @@ class CustomDownloadManager {
         pdfUrl: String?,
         onDownloadFailed: (errorMessage: String) -> Unit = {},
         onDownloadPauseOrRunning: () -> Unit = {},
-        onDownloadPending: () -> Unit = {},
         onDownloadSuccess: (pdSavedPath: String) -> Unit = {}
     ) {
 
@@ -78,9 +78,8 @@ class CustomDownloadManager {
             myDownloadId = downloadManager.enqueue(request)
             val query = Query().setFilterById(myDownloadId)
 
-            lifecycleScope.launchWhenStarted {
+            lifecycleScope.launch (Dispatchers.IO){
                 Timber.e("=== launchWhenStarted")
-
                 var downloading = true
                 while (downloading) {
                     val cursor: Cursor = downloadManager.query(query)
@@ -88,33 +87,23 @@ class CustomDownloadManager {
                     if (cursor.getInt(cursor.getColumnIndex(COLUMN_STATUS)) == STATUS_SUCCESSFUL) {
                         downloading = false
                     }
-                    val status = cursor.getInt(cursor.getColumnIndex(COLUMN_STATUS))
-                    when (status) {
-                        STATUS_PENDING -> {
-                            Timber.e("=== STATUS_PENDING")
-                            onDownloadPending()
-                        }
-                        STATUS_PAUSED, STATUS_RUNNING -> {
-                            Timber.e("=== STATUS_PAUSED")
+                    when (cursor.getInt(cursor.getColumnIndex(COLUMN_STATUS))) {
+                        STATUS_RUNNING -> {
+                            Timber.e("=== STATUS_RUNNING")
                             onDownloadPauseOrRunning()
                         }
                         STATUS_SUCCESSFUL -> {
                             Timber.e("=== STATUS_SUCCESSFUL")
                             onDownloadSuccess(pdfSavedPath)
+                            cursor.close()
+                            this@launch.cancel()
                         }
                         STATUS_FAILED -> {
                             Timber.e("=== STATUS_FAILED")
                             onDownloadFailed(context.getString(R.string.failed_to_download))
+                            cursor.close()
+                            this@launch.cancel()
                         }
-                    }
-
-                    withContext(Dispatchers.IO) {
-                        if (status == STATUS_FAILED || status == STATUS_SUCCESSFUL) {
-                            Timber.e("=== lifecycleScope.cancel()")
-                            lifecycleScope.cancel()
-                        }
-                        Timber.e("=== cursor.close()")
-                        cursor.close()
                     }
                 }
             }
