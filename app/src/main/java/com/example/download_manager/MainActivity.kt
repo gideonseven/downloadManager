@@ -26,7 +26,7 @@ class MainActivity : AppCompatActivity() {
 
         //declare url
         val downloadUrl =
-            "https://www.adobe.com/support/products/enterprise/knowledgecenter/media/${CustomDownloadManager.PDF_NAME}${CustomDownloadManager.PDF_EXTENSION}"
+            "https://unec.edu.az/application/uploads/2014/12/${CustomDownloadManager.PDF_NAME}${CustomDownloadManager.PDF_EXTENSION}"
 
         //declare button
         val button = findViewById<MaterialButton>(R.id.btn_download)

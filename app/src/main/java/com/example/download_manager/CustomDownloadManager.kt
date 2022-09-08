@@ -21,7 +21,7 @@ class CustomDownloadManager {
     companion object {
         const val EXAMPLE_FOLDER = "example"
         const val PDF_EXTENSION = ".pdf"
-        const val PDF_NAME = "c4611_sample_explain"
+        const val PDF_NAME = "pdf-sample"
         const val AUTH_HEADER = "Authorization"
         const val TEXT_BLANK = ""
     }
