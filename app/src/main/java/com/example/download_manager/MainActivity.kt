@@ -2,9 +2,11 @@ package com.example.download_manager
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.airbnb.lottie.LottieAnimationView
 import com.github.barteksc.pdfviewer.PDFView
 import com.google.android.material.button.MaterialButton
 import java.io.File
@@ -15,16 +17,16 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        val lottie = findViewById<LottieAnimationView>(R.id.lav)
         //declare CustomDownloadManager
         val customDownloadManager = CustomDownloadManager()
 
         //declare pdfView
         val pdfView = findViewById<PDFView>(R.id.pdf_view)
 
-
         //declare url
         val downloadUrl =
-            "http://www.africau.edu/images/default/${CustomDownloadManager.PDF_NAME}${CustomDownloadManager.PDF_EXTENSION}"
+            "https://www.adobe.com/support/products/enterprise/knowledgecenter/media/${CustomDownloadManager.PDF_NAME}${CustomDownloadManager.PDF_EXTENSION}"
 
         //declare button
         val button = findViewById<MaterialButton>(R.id.btn_download)
@@ -35,11 +37,16 @@ class MainActivity : AppCompatActivity() {
                 pdfUrl = downloadUrl,
                 onDownloadFailed = {
                     showToast(it)
+                    lottie.visibility = View.GONE
+                    button.visibility = View.VISIBLE
                 },
                 onDownloadPauseOrRunning = {
-
+                    lottie.visibility = View.VISIBLE
+                    button.visibility = View.GONE
                 },
                 onDownloadSuccess = {
+                    lottie.visibility = View.GONE
+                    button.visibility = View.VISIBLE
                     val file = File(it)
                     pdfView.fromFile(file)
                         .load()
