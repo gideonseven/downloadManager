@@ -13,3 +13,14 @@
 .externalNativeBuild
 .cxx
 local.properties
+.idea/.gitignore
+.idea/compiler.xml
+.idea/gradle.xml
+.idea/misc.xml
+.idea/vcs.xml
+app/src/androidTest/java/com/example/download_manager/ExampleInstrumentedTest.kt
+app/src/test/java/com/example/download_manager/ExampleUnitTest.kt
+gradle/wrapper/gradle-wrapper.jar
+gradle/wrapper/gradle-wrapper.properties
+.idea/deploymentTargetDropDown.xml
+.idea/jarRepositories.xml

@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">downloadManager</string>
+    <string name="failed_to_download">Download Failed, Try Again</string>
+    <string name="download">Download</string>
 </resources>
