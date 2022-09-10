@@ -1,7 +1,5 @@
 package com.example.download_manager
 
-import android.annotation.SuppressLint
-import android.os.AsyncTask
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -29,6 +27,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        filePath = applicationContext.externalCacheDir
+            .toString() + File.separator + PDF_NAME + PDF_EXTENSION
+
         //declare lottie
         lottie = findViewById(R.id.lav)
 
@@ -38,7 +39,18 @@ class MainActivity : AppCompatActivity() {
         //declare button
         val button = findViewById<MaterialButton>(R.id.btn_download)
         button.setOnClickListener {
-            makeRequest()
+            val destinationFile = File(filePath)
+
+            /**
+             * if file already exist in directory, dont download, show pdf file
+             */
+            if (!destinationFile.exists()) {
+                Timber.e("File not Exist")
+                makeRequest()
+            } else {
+                Timber.e("File Exist")
+                pdfView.fromFile(File(filePath)).load()
+            }
         }
     }
 
@@ -49,7 +61,7 @@ class MainActivity : AppCompatActivity() {
     private fun makeRequest() {
         Timber.e("makeRequest")
         lottie.visibility = View.VISIBLE
-        val repos = RetrofitBuilder.service.getPdfFile(PDF_NAME+ PDF_EXTENSION)
+        val repos = RetrofitBuilder.service.getPdfFile(PDF_NAME + PDF_EXTENSION)
         repos.enqueue(object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 Timber.e("onResponse ${response.raw()}")
@@ -71,29 +83,27 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun saveToDisk(body: ResponseBody) {
+        // state pdfSaved Path from Url by generate PdfId
+        Timber.e("=== pdfSavedPathEXT  $filePath")
+        val destinationFile = File(filePath)
         try {
-            // state pdfSaved Path from Url by generate PdfId
-            filePath = applicationContext.getExternalFilesDir(EXAMPLE_FOLDER)
-                .toString() + File.separator + PDF_NAME + PDF_EXTENSION
-            Timber.e("=== pdfSavedPathEXT  $filePath")
-            val destinationFile = File(filePath)
-            var `is`: InputStream? = null
-            var os: OutputStream? = null
+            var inputStream: InputStream? = null
+            var outputStream: OutputStream? = null
             try {
                 Timber.e("File Size=" + body.contentLength())
-                `is` = body.byteStream()
-                os = FileOutputStream(destinationFile)
+                inputStream = body.byteStream()
+                outputStream = FileOutputStream(destinationFile)
                 val data = ByteArray(4096)
                 var count: Int
                 var progress = 0
-                while (`is`.read(data).also { count = it } != -1) {
-                    os.write(data, 0, count)
+                while (inputStream.read(data).also { count = it } != -1) {
+                    outputStream.write(data, 0, count)
                     progress += count
                     Timber.e(
                         "Progress: " + progress + "/" + body.contentLength() + " >>>> " + progress.toFloat() / body.contentLength()
                     )
                 }
-                os.flush()
+                outputStream.flush()
                 Timber.e("File saved successfully!")
                 pdfView.fromFile(File(filePath)).load()
                 return
@@ -102,8 +112,8 @@ class MainActivity : AppCompatActivity() {
                 Timber.e("Failed to save the file!")
                 return
             } finally {
-                `is`?.close()
-                os?.close()
+                inputStream?.close()
+                outputStream?.close()
             }
         } catch (e: IOException) {
             e.printStackTrace()
