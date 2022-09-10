@@ -61,7 +61,7 @@ class MainActivity : AppCompatActivity() {
     private fun makeRequest() {
         Timber.e("makeRequest")
         lottie.visibility = View.VISIBLE
-        val repos = RetrofitBuilder.service.getPdfFile(PDF_NAME + PDF_EXTENSION)
+        val repos = RetrofitBuilder.service.getPdfFile(PDF_NAME + PDF_EXTENSION, "")
         repos.enqueue(object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 Timber.e("onResponse ${response.raw()}")
