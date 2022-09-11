@@ -22,7 +22,6 @@ https://unec.edu.az/application/uploads/2014/12/pdf-sample.pdf
 | mhiew:android-pdf-viewer |3.2.0-beta.1|
 | lottie|4.1.0|
 | retrofit|2.9.0|
-| retrofit|2.9.0|
 
 ## Additional Dependencies
 | implementation | version |
