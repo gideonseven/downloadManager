@@ -5,11 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.download_manager.network.RetrofitBuilder
 import com.example.download_manager.util.DownloadHelper
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import okhttp3.ResponseBody
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.File
 
@@ -27,34 +25,33 @@ class MainViewModel : ViewModel() {
         onSuccess: (File) -> Unit,
         onFailed: (Int) -> Unit
     ) {
-        viewModelScope.launch {
+
+
+        viewModelScope.launch(Dispatchers.IO) {
+            val service =
+                RetrofitBuilder.service
+
+            Timber.e("name 0 ${Thread.currentThread().name}")
             Timber.e("makeRequest")
-            val repos =
-                RetrofitBuilder.service.getPdfFile(Constant.PDF_NAME + Constant.PDF_EXTENSION, "")
-            repos.enqueue(object : Callback<ResponseBody> {
-                override fun onResponse(
-                    call: Call<ResponseBody>,
-                    response: Response<ResponseBody>
-                ) {
-                    Timber.e("onResponse ${response.raw()}")
-                    Timber.e("onResponse ${response.errorBody().toString()}")
 
-                    if (response.isSuccessful) {
-                        DownloadHelper.saveToDisk(
-                            response.body()!!, context,
-                            onLoading = onLoading,
-                            onSuccess = onSuccess,
-                            onFailed = onFailed
-                        )
-                    }
+            val response = service.getPdfFile(Constant.PDF_NAME + Constant.PDF_EXTENSION, "")
+            if(response.isSuccessful){
+                withContext(Dispatchers.Main){
+                    Timber.e("name 1 ${Thread.currentThread().name}")
+                    DownloadHelper.saveToDisk(
+                        response.body()!!, context,
+                        onLoading = onLoading,
+                        onSuccess = onSuccess,
+                        onFailed = onFailed
+                    )
                 }
-
-                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                    Timber.e("onFailure")
-                    Timber.e("${t.message}")
+            } else {
+                Timber.e("name 2 ${Thread.currentThread().name}")
+                Timber.e("onFailure")
+                withContext(Dispatchers.Main){
                     onFailed(R.string.failed_to_download)
                 }
-            })
+            }
         }
     }
 }

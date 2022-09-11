@@ -40,6 +40,7 @@ object DownloadHelper {
                     Timber.e(
                         "*** Progress: " + progress + "/" + body.contentLength() + " >>>> " + progress.toFloat() / body.contentLength()
                     )
+                    Timber.e("name 4 ${Thread.currentThread().name}")
                     onLoading(progress.toFloat())
                 }
                 outputStream.flush()
