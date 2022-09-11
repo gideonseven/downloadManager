@@ -15,7 +15,7 @@ import timber.log.Timber
 class MainActivity : AppCompatActivity() {
     private val yourViewModel: MainViewModel by viewModels()
 
-    lateinit var pdfView: PDFView
+    private lateinit var pdfView: PDFView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
